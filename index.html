@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#176b50">
+<title>駐車場所メモ</title>
+<style>
+:root { color-scheme: light; --green:#176b50; --pale:#e4f2eb; --line:#d8dfdb; }
+* { box-sizing:border-box; }
+body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:#f4f7f5; color:#18211d; }
+header { background:var(--green); color:white; padding:22px 18px 18px; }
+header h1 { margin:0 0 5px; font-size:24px; }
+header p { margin:0; font-size:14px; opacity:.9; }
+main { max-width:560px; margin:0 auto; padding:16px; }
+.card { background:white; border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:14px; box-shadow:0 2px 8px #122b1a0a; }
+h2 { font-size:17px; margin:0 0 12px; }
+.field { margin-bottom:16px; }
+.field:last-child { margin-bottom:0; }
+label { display:block; font-weight:650; margin-bottom:8px; }
+.choices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.choices.rows { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.choice { border:1px solid var(--line); border-radius:11px; background:white; padding:13px 5px; font-size:16px; font-weight:650; color:#25342c; }
+.choice[aria-pressed="true"] { border:2px solid var(--green); background:var(--pale); color:var(--green); padding:12px 4px; }
+input, textarea { width:100%; border:1px solid #bdc9c2; border-radius:10px; padding:12px; font:inherit; background:white; }
+button.primary { width:100%; border:0; border-radius:12px; background:var(--green); color:white; font-size:17px; font-weight:700; padding:15px; }
+button.secondary { border:1px solid var(--line); border-radius:10px; background:white; color:#24352b; padding:10px 12px; font:inherit; }
+.last-title { color:#53645a; font-size:13px; margin-bottom:7px; }
+.last-place { font-size:25px; font-weight:800; color:var(--green); line-height:1.35; }
+.meta { color:#5a675f; font-size:13px; margin-top:8px; }
+.empty { color:#65736a; font-size:14px; }
+.history-item { border-top:1px solid #e6ebe8; padding:12px 0; }
+.history-item:first-child { border-top:0; padding-top:0; }
+.history-place { font-weight:700; }
+.history-meta { font-size:12px; color:#65736a; margin-top:4px; }
+.footer { color:#68756d; font-size:12px; line-height:1.5; padding:0 4px 18px; }
+</style>
+</head>
+<body>
+<header><h1>駐車場所メモ</h1><p>会社の駐車場をすばやく記録</p></header>
+<main>
+<section class="card" aria-live="polite">
+  <div class="last-title">前回の駐車場所</div>
+  <div id="lastPlace" class="empty">まだ記録がありません</div>
+  <div id="lastMeta" class="meta"></div>
+</section>
+<section class="card">
+  <h2>駐車した場所を記録</h2>
+  <div class="field"><label>階</label><div id="floors" class="choices">
+    <button class="choice" data-group="floor" data-value="1階" aria-pressed="false">1階</button>
+    <button class="choice" data-group="floor" data-value="2階" aria-pressed="true">2階</button>
+    <button class="choice" data-group="floor" data-value="3階" aria-pressed="false">3階</button>
+  </div></div>
+  <div class="field"><label>エリア</label><div id="areas" class="choices">
+    <button class="choice" data-group="area" data-value="Aエリア" aria-pressed="true">A</button>
+    <button class="choice" data-group="area" data-value="Bエリア" aria-pressed="false">B</button>
+    <button class="choice" data-group="area" data-value="Cエリア" aria-pressed="false">C</button>
+  </div></div>
+  <div class="field"><label>列</label><div id="rows" class="choices rows">
+    <button class="choice" data-group="row" data-value="1列" aria-pressed="false">1列</button>
+    <button class="choice" data-group="row" data-value="2列" aria-pressed="false">2列</button>
+    <button class="choice" data-group="row" data-value="3列" aria-pressed="true">3列</button>
+    <button class="choice" data-group="row" data-value="4列" aria-pressed="false">4列</button>
+  </div></div>
+  <div class="field"><label for="memo">補足（任意）</label><input id="memo" maxlength="80" placeholder="例：入口に近い、柱B4の横"></div>
+  <button id="save" class="primary">この場所を保存</button>
+</section>
+<section class="card">
+  <h2>最近の記録</h2>
+  <div id="history" class="empty">保存すると、ここに履歴が表示されます。</div>
+  <div style="margin-top:12px"><button id="clear" class="secondary">履歴をすべて削除</button></div>
+</section>
+<p class="footer">記録はこのiPhoneのブラウザー内に保存されます。別の端末とは共有されません。ブラウザーの履歴・サイトデータを消すと記録も消える場合があります。</p>
+</main>
+<script>
+const STORAGE_KEY = "parkingMemoRecordsV1";
+const selected = { floor: "2階", area: "Aエリア", row: "3列" };
+document.querySelectorAll(".choice").forEach(button => {
+  button.addEventListener("click", () => {
+    const group = button.dataset.group;
+    selected[group] = button.dataset.value;
+    document.querySelectorAll(`.choice[data-group="${group}"]`).forEach(b => b.setAttribute("aria-pressed", String(b === button)));
+  });
+});
+function getRecords() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); } catch { return []; }
+}
+function saveRecords(records) { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); }
+function formatDate(iso) {
+  return new Intl.DateTimeFormat("ja-JP", {year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit"}).format(new Date(iso));
+}
+function placeText(r) { return `${r.floor}・${r.area}・${r.row}`; }
+function render() {
+  const records = getRecords();
+  const lastPlace = document.getElementById("lastPlace");
+  const lastMeta = document.getElementById("lastMeta");
+  if (records.length) {
+    lastPlace.className = "last-place";
+    lastPlace.textContent = placeText(records[0]);
+    lastMeta.textContent = `${formatDate(records[0].time)}${records[0].memo ? " ／ " + records[0].memo : ""}`;
+  } else {
+    lastPlace.className = "empty";
+    lastPlace.textContent = "まだ記録がありません";
+    lastMeta.textContent = "";
+  }
+  const history = document.getElementById("history");
+  if (!records.length) {
+    history.className = "empty";
+    history.textContent = "保存すると、ここに履歴が表示されます。";
+  } else {
+    history.className = "";
+    history.replaceChildren();
+    records.slice(0,10).forEach(r => {
+      const item = document.createElement("div"); item.className = "history-item";
+      const place = document.createElement("div"); place.className = "history-place"; place.textContent = placeText(r);
+      const meta = document.createElement("div"); meta.className = "history-meta"; meta.textContent = `${formatDate(r.time)}${r.memo ? " ／ " + r.memo : ""}`;
+      item.append(place, meta); history.append(item);
+    });
+  }
+}
+document.getElementById("save").addEventListener("click", () => {
+  const records = getRecords();
+  records.unshift({...selected, memo: document.getElementById("memo").value.trim(), time: new Date().toISOString()});
+  saveRecords(records.slice(0,50));
+  document.getElementById("memo").value = "";
+  render();
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+document.getElementById("clear").addEventListener("click", () => {
+  if (confirm("保存した履歴をすべて削除します。よろしいですか？")) {
+    localStorage.removeItem(STORAGE_KEY); render();
+  }
+});
+render();
+</script>
+</body>
+</html>
