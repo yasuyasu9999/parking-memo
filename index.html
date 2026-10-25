@@ -1,165 +1,51 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#176b50">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>駐車場所メモ</title>
 <style>
-:root { color-scheme: light; --green:#176b50; --pale:#e4f2eb; --line:#d8dfdb; }
-* { box-sizing:border-box; }
-body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:#f4f7f5; color:#18211d; }
-header { background:var(--green); color:white; padding:22px 18px 18px; }
-header h1 { margin:0 0 5px; font-size:24px; }
-header p { margin:0; font-size:14px; opacity:.9; }
-main { max-width:560px; margin:0 auto; padding:16px; }
-.card { background:white; border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:14px; box-shadow:0 2px 8px #122b1a0a; }
-h2 { font-size:17px; margin:0 0 12px; }
-.section-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px; }
-.section-heading h2 { margin:0; }
-.date-filter { display:flex; gap:4px; flex-shrink:0; }
-.filter-button { border:1px solid var(--line); border-radius:8px; background:white; padding:7px 10px; color:#33443a; font-size:14px; }
-.filter-button[aria-pressed="true"] { background:var(--green); border-color:var(--green); color:white; }
-.field { margin-bottom:16px; }
-.field:last-child { margin-bottom:0; }
-label { display:block; font-weight:650; margin-bottom:8px; }
-.choices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
-.choices.rows { grid-template-columns:repeat(4,minmax(0,1fr)); }
-.area-layout { display:flex; flex-direction:column; gap:8px; }
-.area-row { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
-.area-row.single { grid-template-columns:repeat(3,minmax(0,1fr)); }
-.area-row.single .choice { grid-column:2; }
-.choice { border:1px solid var(--line); border-radius:11px; background:white; padding:13px 5px; font-size:16px; font-weight:650; color:#25342c; }
-.choice[aria-pressed="true"] { border:2px solid var(--green); background:var(--pale); color:var(--green); padding:12px 4px; }
-input, textarea { width:100%; border:1px solid #bdc9c2; border-radius:10px; padding:12px; font:inherit; background:white; }
-button.primary { width:100%; border:0; border-radius:12px; background:var(--green); color:white; font-size:17px; font-weight:700; padding:15px; }
-button.secondary { border:1px solid var(--line); border-radius:10px; background:white; color:#24352b; padding:10px 12px; font:inherit; }
-.last-title { color:#53645a; font-size:13px; margin-bottom:7px; }
-.last-place { font-size:25px; font-weight:800; color:var(--green); line-height:1.35; }
-.meta { color:#5a675f; font-size:13px; margin-top:8px; }
-.empty { color:#65736a; font-size:14px; }
-.history-item { border-top:1px solid #e6ebe8; padding:12px 0; }
-.history-item:first-child { border-top:0; padding-top:0; }
-.history-place { font-weight:700; }
-.history-meta { font-size:12px; color:#65736a; margin-top:4px; }
-.footer { color:#68756d; font-size:12px; line-height:1.5; padding:0 4px 18px; }
+body{font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif;margin:0;padding:16px;background:#f5f7f8;color:#1d252b}main{max-width:520px;margin:0 auto}.heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}h1{font-size:22px;margin:0}h2{font-size:18px;margin:0 0 12px}section{background:white;border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 1px 4px #0000000d}.muted{color:#65727a;font-size:13px}.date-chip{display:inline-block;font-size:13px;font-weight:700;border-radius:999px;padding:7px 11px;white-space:nowrap;background:#e3f4e9;color:#176b3a}.date-chip.past{background:#fff0d8;color:#875400}.field{margin:16px 0}.field-label{display:block;font-weight:700;margin-bottom:9px}.choices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}button,input{font:inherit}.choice{border:1px solid #cbd3d8;background:#fff;color:#263238;border-radius:10px;min-height:44px;padding:9px 5px;font-weight:600}.choice.selected{background:#e4f2eb;border:2px solid #176b50;padding:8px 4px}.area-layout{display:flex;flex-direction:column;gap:8px}.area-middle{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.area-single{display:flex;justify-content:center}.area-single .choice{width:33.333%;max-width:160px}.memo{width:100%;box-sizing:border-box;border:1px solid #cbd3d8;border-radius:10px;padding:11px;min-height:44px}.save{width:100%;border:0;border-radius:10px;background:#176b50;color:white;font-weight:700;padding:13px;margin-top:4px}.record{border-top:1px solid #e6eaec;padding:12px 0}.record:first-child{border-top:0;padding-top:0}.record-top{display:flex;justify-content:space-between;align-items:center;gap:8px}.record-place{font-size:17px;font-weight:700}.record-date{font-size:12px;color:#5b6870;white-space:nowrap}.record-date.today{color:#176b3a;font-weight:700}.record-date.past{color:#875400;font-weight:700}.record-memo{margin-top:5px;white-space:pre-wrap;overflow-wrap:anywhere}.latest-place{font-size:20px;font-weight:700;margin:8px 0}.empty{color:#65727a;font-size:14px}@media(max-width:360px){body{padding:10px}.choices{gap:6px}.choice{font-size:14px}}
 </style>
 </head>
-<body>
-<header><h1>駐車場所メモ</h1><p>会社の駐車場をすばやく記録</p></header>
-<main>
-<section class="card" aria-live="polite">
-  <div class="last-title">前回の駐車場所</div>
-  <div id="lastPlace" class="empty">まだ記録がありません</div>
-  <div id="lastMeta" class="meta"></div>
-</section>
-<section class="card">
-  <div class="section-heading">
-    <h2>駐車した場所を記録</h2>
-    <div class="date-filter" role="group" aria-label="記録日の表示">
-      <button type="button" id="filterToday" class="filter-button" aria-pressed="true">今日</button>
-      <button type="button" id="filterPast" class="filter-button" aria-pressed="false">過去</button>
-    </div>
-  </div>
-  <div class="field"><label>階</label><div id="floors" class="choices">
-    <button class="choice" data-group="floor" data-value="1階" aria-pressed="false">1階</button>
-    <button class="choice" data-group="floor" data-value="2階" aria-pressed="true">2階</button>
-    <button class="choice" data-group="floor" data-value="3階" aria-pressed="false">3階</button>
-    <button class="choice" data-group="floor" data-value="屋上" aria-pressed="false">屋上</button>
-  </div></div>
-  <div class="field"><label>エリア</label><div id="areas" class="area-layout">
-    <div class="area-row single">
-      <button class="choice" data-group="area" data-value="北" aria-pressed="false">北</button>
-    </div>
-    <div class="area-row">
-      <button class="choice" data-group="area" data-value="西" aria-pressed="false">西</button>
-      <button class="choice" data-group="area" data-value="中" aria-pressed="false">中</button>
-      <button class="choice" data-group="area" data-value="東" aria-pressed="true">東</button>
-    </div>
-    <div class="area-row single">
-      <button class="choice" data-group="area" data-value="南" aria-pressed="false">南</button>
-    </div>
-  </div></div>
-  <div class="field"><label for="memo">補足（任意）</label><input id="memo" maxlength="80" placeholder="例：入口に近い、柱B4の横"></div>
-  <button id="save" class="primary">この場所を保存</button>
-</section>
-<section class="card">
-  <h2>最近の記録</h2>
-  <div id="history" class="empty">保存すると、ここに履歴が表示されます。</div>
-  <div style="margin-top:12px"><button id="clear" class="secondary">履歴をすべて削除</button></div>
-</section>
-<p class="footer">記録はこのiPhoneのブラウザー内に保存されます。別の端末とは共有されません。ブラウザーの履歴・サイトデータを消すと記録も消える場合があります。</p>
+<body><main>
+<div class="heading"><h1>駐車場所メモ</h1><span id="todayDate" class="muted"></span></div>
+<section><h2>前回、駐車した場所</h2><div id="latest"><p class="empty">まだ記録がありません。</p></div></section>
+<section><h2>駐車した場所を記録</h2>
+<div class="field"><span class="field-label">階</span><div class="choices">
+<button type="button" class="choice selected" data-floor="1階">1階</button><button type="button" class="choice" data-floor="2階">2階</button><button type="button" class="choice" data-floor="3階">3階</button><button type="button" class="choice" data-floor="屋上">屋上</button>
+</div></div>
+<div class="field"><span class="field-label">エリア</span><div class="area-layout">
+<div class="area-single"><button type="button" class="choice" data-area="北">北</button></div>
+<div class="area-middle"><button type="button" class="choice" data-area="西">西</button><button type="button" class="choice selected" data-area="中">中</button><button type="button" class="choice" data-area="東">東</button></div>
+<div class="area-single"><button type="button" class="choice" data-area="南">南</button></div>
+</div></div>
+<div class="field"><label class="field-label" for="memo">メモ（任意）</label><input id="memo" class="memo" type="text" placeholder="例：エレベーターの近く"></div>
+<button id="save" class="save" type="button">保存する</button><p class="muted">保存日時は自動で記録され、次に開いたときも「今日／過去」が表示されます。</p>
+</section><section><h2>保存履歴</h2><div id="history"></div></section>
 </main>
 <script>
-const STORAGE_KEY = "parkingMemoRecordsV1";
-const selected = { floor: "2階", area: "東" };
-let activeFilter = "today";
-document.querySelectorAll(".choice").forEach(button => {
-  button.addEventListener("click", () => {
-    const group = button.dataset.group;
-    selected[group] = button.dataset.value;
-    document.querySelectorAll(`.choice[data-group="${group}"]`).forEach(b => b.setAttribute("aria-pressed", String(b === button)));
-  });
-});
-function getRecords() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); } catch { return []; }
+(() => {
+const KEY='parkingMemoRecordsV3';let selectedFloor='1階',selectedArea='中';
+const dateKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const todayKey=()=>dateKey(new Date());
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const read=()=>{try{const r=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(r)?r:[]}catch{return[]}};
+const recKey=r=>{if(r.dateKey)return r.dateKey;const d=new Date(r.time);return Number.isNaN(d.getTime())?'':dateKey(d)};
+const dateTime=r=>{const d=new Date(r.time);if(Number.isNaN(d.getTime()))return'日時不明';return`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
+const place=r=>`${r.floor||''}・${r.area||''}`;
+function render(){
+const records=read().sort((a,b)=>new Date(b.time).getTime()-new Date(a.time).getTime()),today=todayKey();
+document.getElementById('todayDate').textContent=`今日：${today.replaceAll('-','/')}`;
+const latest=document.getElementById('latest');
+if(!records.length)latest.innerHTML='<p class="empty">まだ記録がありません。</p>';
+else{const r=records[0],isToday=recKey(r)===today;latest.innerHTML=`<div class="record-top"><span class="date-chip ${isToday?'':'past'}">${isToday?'今日の記録':'過去の記録'}</span><span class="record-date">${esc(dateTime(r))}</span></div><div class="latest-place">${esc(place(r))}</div>${r.memo?`<div class="record-memo">${esc(r.memo)}</div>`:''}`}
+const history=document.getElementById('history');if(!records.length){history.innerHTML='<p class="empty">保存した記録はここに表示されます。</p>';return}
+history.innerHTML=records.map(r=>{const isToday=recKey(r)===today;return`<div class="record"><div class="record-top"><span class="record-place">${esc(place(r))}</span><span class="date-chip ${isToday?'':'past'}">${isToday?'今日':'過去'}</span></div><div class="record-date ${isToday?'today':'past'}">${esc(dateTime(r))}</div>${r.memo?`<div class="record-memo">${esc(r.memo)}</div>`:''}</div>`}).join('');
 }
-function saveRecords(records) { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); }
-function formatDate(iso) {
-  return new Intl.DateTimeFormat("ja-JP", {year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit"}).format(new Date(iso));
-}
-function placeText(r) { return `${r.floor}・${r.area}`; }
-function isToday(iso) {
-  const d = new Date(iso), n = new Date();
-  return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
-}
-function render() {
-  const records = getRecords();
-  const lastPlace = document.getElementById("lastPlace");
-  const lastMeta = document.getElementById("lastMeta");
-  if (records.length) {
-    lastPlace.className = "last-place";
-    lastPlace.textContent = placeText(records[0]);
-    lastMeta.textContent = `${formatDate(records[0].time)}${records[0].memo ? " ／ " + records[0].memo : ""}`;
-  } else {
-    lastPlace.className = "empty";
-    lastPlace.textContent = "まだ記録がありません";
-    lastMeta.textContent = "";
-  }
-  document.getElementById("filterToday").setAttribute("aria-pressed", String(activeFilter === "today"));
-  document.getElementById("filterPast").setAttribute("aria-pressed", String(activeFilter === "past"));
-  const filtered = records.filter(r => activeFilter === "today" ? isToday(r.time) : !isToday(r.time));
-  const history = document.getElementById("history");
-  if (!filtered.length) {
-    history.className = "empty";
-    history.textContent = activeFilter === "today" ? "今日はまだ記録がありません。" : "過去の記録はありません。";
-  } else {
-    history.className = "";
-    history.replaceChildren();
-    filtered.slice(0,50).forEach(r => {
-      const item = document.createElement("div"); item.className = "history-item";
-      const place = document.createElement("div"); place.className = "history-place"; place.textContent = placeText(r);
-      const meta = document.createElement("div"); meta.className = "history-meta"; meta.textContent = `${formatDate(r.time)}${r.memo ? " ／ " + r.memo : ""}`;
-      item.append(place, meta); history.append(item);
-    });
-  }
-}
-document.getElementById("save").addEventListener("click", () => {
-  const records = getRecords();
-  records.unshift({...selected, memo: document.getElementById("memo").value.trim(), time: new Date().toISOString()});
-  saveRecords(records.slice(0,50));
-  document.getElementById("memo").value = "";
-  render();
-  window.scrollTo({top:0, behavior:"smooth"});
-});
-document.getElementById("filterToday").addEventListener("click", () => { activeFilter = "today"; render(); });
-document.getElementById("filterPast").addEventListener("click", () => { activeFilter = "past"; render(); });
-document.getElementById("clear").addEventListener("click", () => {
-  if (confirm("保存した履歴をすべて削除します。よろしいですか？")) {
-    localStorage.removeItem(STORAGE_KEY); render();
-  }
-});
+document.querySelectorAll('[data-floor]').forEach(btn=>btn.addEventListener('click',()=>{selectedFloor=btn.dataset.floor;document.querySelectorAll('[data-floor]').forEach(b=>b.classList.toggle('selected',b===btn))}));
+document.querySelectorAll('[data-area]').forEach(btn=>btn.addEventListener('click',()=>{selectedArea=btn.dataset.area;document.querySelectorAll('[data-area]').forEach(b=>b.classList.toggle('selected',b===btn))}));
+document.getElementById('save').addEventListener('click',()=>{const now=new Date(),records=read();records.push({floor:selectedFloor,area:selectedArea,memo:document.getElementById('memo').value.trim(),time:now.toISOString(),dateKey:todayKey()});localStorage.setItem(KEY,JSON.stringify(records));document.getElementById('memo').value='';render()});
 render();
-</script>
-</body>
-</html>
+})();
+</script></body></html>
